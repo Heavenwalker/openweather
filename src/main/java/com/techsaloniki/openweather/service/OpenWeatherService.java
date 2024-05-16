@@ -7,6 +7,7 @@ import com.techsaloniki.openweather.client.request.geoCoding.GetCoordinatesByCit
 import com.techsaloniki.openweather.client.request.weatherData.GetWeatherInfoBeanParam;
 import com.techsaloniki.openweather.client.response.geoCoding.CoordinatesByCityName;
 import com.techsaloniki.openweather.client.response.weatherData.OpenWeatherResponse;
+import com.techsaloniki.openweather.resource.FindByCityParamWrapper;
 import io.quarkus.cache.CacheResult;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -30,7 +31,12 @@ public class OpenWeatherService {
     }
 
 @CacheResult(cacheName = "weather-cache")
-    public OpenWeatherResponse getWeatherByCity(String city, String state, String country) {
+    public OpenWeatherResponse getWeatherByCity(FindByCityParamWrapper findByCityParamWrapper) {
+        var city = findByCityParamWrapper.getCity();
+        var state = findByCityParamWrapper.getState();
+        var country = findByCityParamWrapper.getCountry();
+        var units = findByCityParamWrapper.getUnits() == null ? "metric" : findByCityParamWrapper.getUnits();
+
         var coords = retrieveCoordinates(city, state, country);
 
         return Optional.ofNullable(coords)
@@ -39,6 +45,7 @@ public class OpenWeatherService {
                 .map(c -> GetWeatherInfoBeanParam.Builder.builder()
                         .lat(String.valueOf(c.getLat()))
                         .lon(String.valueOf(c.getLon()))
+                        .units(units)
                         .appId(openWeatherConfig.apiKey())
                         .build())
                 .map(openWeatherClient::getWeatherInfo)

@@ -3,7 +3,6 @@ package com.techsaloniki.openweather.resource;
 import com.techsaloniki.openweather.client.response.weatherData.OpenWeatherResponse;
 import com.techsaloniki.openweather.service.OpenWeatherService;
 import jakarta.inject.Inject;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
@@ -20,10 +19,8 @@ public class OpenWeatherResource {
 
     @GET
     @Path("/byCity/")
-    public OpenWeatherResponse getWeatherByCity(@NotBlank @QueryParam("city") String city,
-                                                @QueryParam("state") String state,
-                                                @QueryParam("country") String country){
-        return openWeatherService.getWeatherByCity(city, state, country);
+    public OpenWeatherResponse getWeatherByCity(FindByCityParamWrapper findByCityParamWrapper){
+        return openWeatherService.getWeatherByCity(findByCityParamWrapper);
     }
 
     @GET
